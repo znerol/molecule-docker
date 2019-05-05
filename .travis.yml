@@ -10,6 +10,7 @@ env:
   matrix:
     - IMAGE_TAG=alpine
       IMAGE_FROM=alpine
+      IMAGE_VARIANT_SYSTEMD=no
     - IMAGE_TAG=debian
       IMAGE_FROM=debian
     - IMAGE_TAG=centos
@@ -22,6 +23,7 @@ env:
       IMAGE_FROM=ubuntu
     - IMAGE_TAG=voidlinux
       IMAGE_FROM=voidlinux/voidlinux
+      IMAGE_VARIANT_SYSTEMD=no
 
 install:
   - pip install j2cli PyYAML
@@ -33,3 +35,8 @@ before_script:
 script:
   - make FROM="${IMAGE_FROM}" "image/${IMAGE_NAME}:${IMAGE_TAG}"
   - docker push "${IMAGE_NAME}:${IMAGE_TAG}"
+  -|
+    if [ "${IMAGE_VARIANT_SYSTEMD:-yes}" = "yes" ]; then
+        make FROM="${IMAGE_FROM}" "image-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
+        docker push "${IMAGE_NAME}:${IMAGE_TAG}-systemd"
+    fi

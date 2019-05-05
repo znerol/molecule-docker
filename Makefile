@@ -25,8 +25,20 @@ image/%: image/%/Dockerfile
 	docker pull $(@:image/%=%) || true
 	docker build --cache-from=$(@:image/%=%) --tag=$(@:image/%=%) --file=$< .
 
+image-systemd/%/Dockerfile: image/%/data.yml
+	mkdir -p $(@D)
+	j2 -o $@ Dockerfile.j2 $<
+	cat variants/systemd >> $@
+
+image-systemd/%: image-systemd/%/Dockerfile
+	$(eval $(call FROM_default, $(@D)))
+	docker pull $(FROM)
+	docker pull $(@:image-systemd/%=%) || true
+	docker pull $(@:image-systemd/%=%)-systemd || true
+	docker build --cache-from=$(@:image-systemd/%=%) --cache-from=$(@:image-systemd/%=%)-systemd --tag=$(@:image-systemd/%=%)-systemd --file=$< .
+
 clean:
-	rm -rf image
+	rm -rf image image-systemd
 
 distclean: clean
 	rm -f Dockerfile.j2.raw Dockerfile.j2
