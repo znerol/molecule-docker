@@ -31,5 +31,5 @@ before_script:
   - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 
 script:
-  - make FROM="${IMAGE_FROM}" "${IMAGE_NAME}:${IMAGE_TAG}"
+  - make FROM="${IMAGE_FROM}" "image/${IMAGE_NAME}:${IMAGE_TAG}"
   - docker push "${IMAGE_NAME}:${IMAGE_TAG}"
