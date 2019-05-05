@@ -1,0 +1,35 @@
+language: python
+servics: docker
+
+env:
+  global:
+    - IMAGE_NAME: znerolmolecule/molecule-prebuilt
+    - DOCKER_USERNAME: znerolmoleculeci
+    # travis encrypt DOCKER_PASSWORD=abcdefg[...]
+    - secure: "Zu/GZSdP1lu/LoFSMiYwBAtu+m+LeRwsSU/fiPX4XdBQPnrkLQTNjVlj1bvp7hxJ9ZkFGDKReVJRtyFs3cHYofowHuqHRoUEakFv+usO4VhAaCDbXbznK4B/YJe+mreb+oM5+nOrzhu0iupH4xU23lPwInjGR8X/HNDmxU4CnWeYXBZhJSwUUrjwJoFK9f2+2cBChYXMPY9t8NfsKg4Fe8bkLg6+C+E803lDQYXlHG6uDeksaag+TBmFD8qkdYcrhOlOOgyyvJbBkcgEJS3vmasYC0IXMqDaqvT3riNDn5/g+UkdCc8lYVnOjFYBRbwrhWr367mgas/fs3KOrd18ddCQFCizg+u58A0PuGQOHdRSDVC2ucCs1KNvTwMoBC0/UdBE25FdBl4aNEaTd/zoT8phn86oUdGSjCpNMoK5tveRhV32y/dPhMnYwg2x/0UNZCCV9GQ05Y5a1O6jVnsaCakI0Xiakikdx/Fjs4St02crRgQFCJJuAwrwlSIcuDslTafiJuOCO/UGrPfz4oSS0jdhvF1404uIDy64owQn0uXjCC0SpXo+N8QlXEyo3tg6JLvp6tNKzOQJcB6J+s3XWq0ei2er8/gIauX+bAJsEQT0Ugsoz1e4zLBNyG8E+CnciMZpVW8hPAvTRVRgB9420Wk6rf31+mQ+IX30d2VvxxA="
+  matrix:
+    - IMAGE_TAG=alpine
+      IMAGE_FROM=alpine
+    - IMAGE_TAG=debian
+      IMAGE_FROM=debian
+    - IMAGE_TAG=centos
+      IMAGE_FROM=centos
+    - IMAGE_TAG=fedora
+      IMAGE_FROM=fedora
+    - IMAGE_TAG=opensuse-leap
+      IMAGE_FROM=opensuse/leap
+    - IMAGE_TAG=ubuntu
+      IMAGE_FROM=ubuntu
+    - IMAGE_TAG=voidlinux
+      IMAGE_FROM=voidlinux/voidlinux
+
+install:
+  - pip install j2cli
+
+before_script:
+  - docker --version
+  - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+
+script:
+  - make FROM="${IMAGE_FROM}" "${IMAGE_NAME}:${IMAGE_TAG}"
+  - docker push "${IMAGE_NAME}:${IMAGE_TAG}"
