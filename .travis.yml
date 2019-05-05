@@ -35,7 +35,7 @@ before_script:
 script:
   - make FROM="${IMAGE_FROM}" "image/${IMAGE_NAME}:${IMAGE_TAG}"
   - docker push "${IMAGE_NAME}:${IMAGE_TAG}"
-  -|
+  - |
     if [ "${IMAGE_VARIANT_SYSTEMD:-yes}" = "yes" ]; then
         make FROM="${IMAGE_FROM}" "image-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
         docker push "${IMAGE_NAME}:${IMAGE_TAG}-systemd"
