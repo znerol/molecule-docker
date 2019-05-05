@@ -24,7 +24,7 @@ env:
       IMAGE_FROM=voidlinux/voidlinux
 
 install:
-  - pip install j2cli
+  - pip install j2cli PyYAML
 
 before_script:
   - docker --version
