@@ -23,7 +23,7 @@ image/%: image/%/Dockerfile
 	$(eval $(call FROM_default, $(@D)))
 	docker pull $(FROM)
 	docker pull $(@:image/%=%) || true
-	docker build --tag=$(@:image/%=%) --file=$< .
+	docker build --cache-from=$(@:image/%=%) --tag=$(@:image/%=%) --file=$< .
 
 clean:
 	rm -rf image
