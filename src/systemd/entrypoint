@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -eu
+
+print_cmd() {
+    printf '#/bin/sh\nexec'
+    printf " %q" "$@"
+}
+
+print_cmd "$@" > /cmd
+/bin/chmod 0755 /cmd
+
+exec "${SYSTEMD_PREFIX}/lib/systemd/systemd" ${SYSTEMD_PARAMS}
