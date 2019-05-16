@@ -19,6 +19,7 @@ env:
       IMAGE_FROM=fedora
     - IMAGE_TAG=opensuse-leap
       IMAGE_FROM=opensuse/leap
+      IMAGE_VARIANT_SYSTEMD_PREFIX=/usr
     - IMAGE_TAG=ubuntu
       IMAGE_FROM=ubuntu
     - IMAGE_TAG=voidlinux
@@ -38,7 +39,7 @@ script:
   - |
     set -e
     if [ "${IMAGE_VARIANT_SYSTEMD:-yes}" = "yes" ]; then
-        make FROM="${IMAGE_FROM}" "image-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
+        make FROM="${IMAGE_FROM}" BUILD_ARGS="--build-arg=SYSTEMD_PREFIX=${IMAGE_VARIANT_SYSTEMD_PREFIX}" "image-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
         make "test-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
     fi
 

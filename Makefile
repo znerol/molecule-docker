@@ -23,7 +23,7 @@ image/%: image/%/Dockerfile
 	$(eval $(call FROM_default, $(@D)))
 	docker pull $(FROM)
 	docker pull $(@:image/%=%) || true
-	docker build --cache-from=$(@:image/%=%) --tag=$(@:image/%=%) --file=$< .
+	docker build $(BUILD_ARGS) --cache-from=$(@:image/%=%) --tag=$(@:image/%=%) --file=$< .
 
 test/%: image/%
 	docker run -it --rm $(@:test/%=%) /bin/true
@@ -38,7 +38,7 @@ image-systemd/%: image-systemd/%/Dockerfile
 	docker pull $(FROM)
 	docker pull $(@:image-systemd/%=%) || true
 	docker pull $(@:image-systemd/%=%)-systemd || true
-	docker build --cache-from=$(@:image-systemd/%=%) --cache-from=$(@:image-systemd/%=%)-systemd --tag=$(@:image-systemd/%=%)-systemd --file=$< .
+	docker build $(BUILD_ARGS) --cache-from=$(@:image-systemd/%=%) --cache-from=$(@:image-systemd/%=%)-systemd --tag=$(@:image-systemd/%=%)-systemd --file=$< .
 
 test-systemd/%: image-systemd/%
 	$(eval _CONTAINER := $(shell docker run -d -it --cap-add SYS_ADMIN --tmpfs /run --tmpfs /run/lock --volume /sys/fs/cgroup:/sys/fs/cgroup:ro $(@:test-systemd/%=%)-systemd))
