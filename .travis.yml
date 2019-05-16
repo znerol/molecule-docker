@@ -10,8 +10,7 @@ env:
 
 stages:
   - image
-  - name: image-systemd
-    if: env(IMAGE_VARIANT_SYSTEMD) IS NOT present OR env(IMAGE_VARIANT_SYSTEMD) = "yes"
+  - image-systemd
 
 install:
   - pip install j2cli PyYAML
