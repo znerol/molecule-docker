@@ -6,15 +6,15 @@ ENV container docker
 RUN if [ $(command -v apt-get) ]; then apt-get update && apt-get install -y systemd && apt-get clean; \
     elif [ $(command -v dnf) ]; then dnf makecache && dnf --assumeyes install systemd && dnf clean all; \
     elif [ $(command -v yum) ]; then yum makecache fast && yum install -y systemd && yum clean all; \
-    elif [ $(command -v zypper) ]; then zypper refresh && zypper install -y systemd systemd-sysvinit && zypper clean -a; \
+    elif [ $(command -v zypper) ]; then zypper refresh && zypper install -y systemd && zypper clean -a; \
     elif [ $(command -v apk) ]; then echo "Alpine Linux does not support systemd" >&2 && exit 1; \
     elif [ $(command -v xbps-install) ]; then echo "Void Linux does not support systemd" >&2 && exit 1; fi
 
-# Install systemd-sysv on Debian and recent Ubuntu.
-RUN if [ $(command -v apt-cache) ] && apt-cache show systemd-sysv >/dev/null 2>&1; then apt-get update && apt-get install -y systemd-sysv && apt-get clean; fi
+ARG SYSTEMD_PREFIX
+ENV SYSTEMD_PREFIX ${SYSTEMD_PREFIX}
 
 # Don't start any optional services except for the few we need.
-RUN ls -1d /etc/systemd/system /lib/systemd/system /usr/lib/systemd/system /usr/local/lib/systemd/system | \
+RUN ls -1d /etc/systemd/system ${SYSTEMD_PREFIX}/lib/systemd/system | \
     xargs -I'{DIR}' find '{DIR}' \
     -path '*.wants/*' \
     -not -name '*journald*' \
@@ -36,4 +36,7 @@ RUN systemctl set-default multi-user.target && \
 
 STOPSIGNAL SIGRTMIN+3
 
-CMD ["/sbin/init", "--log-target=journal"]
+ARG SYSTEMD_PARAMS
+ENV SYSTEMD_PARAMS ${SYSTEMD_PARAMS:-"--log-target=journal"}
+
+CMD exec ${SYSTEMD_PREFIX}/lib/systemd/systemd ${SYSTEMD_PARAMS}
