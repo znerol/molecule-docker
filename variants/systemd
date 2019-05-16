@@ -22,13 +22,6 @@ RUN ls -1d /etc/systemd/system ${SYSTEMD_PREFIX}/lib/systemd/system | \
     -not -name '*systemd-user-sessions*' \
     -exec rm \{} \;
 
-RUN if [ $(command -v apt-get) ]; then apt-get update && apt-get install -y dbus && apt-get clean; \
-    elif [ $(command -v dnf) ]; then dnf makecache && dnf --assumeyes install dbus && dnf clean all; \
-    elif [ $(command -v yum) ]; then yum makecache fast && yum install -y dbus && yum clean all; \
-    elif [ $(command -v zypper) ]; then zypper refresh && zypper install -y dbus-1 && zypper clean -a; \
-    elif [ $(command -v apk) ]; then echo "Alpine Linux does not support systemd" >&2 && exit 1; \
-    elif [ $(command -v xbps-install) ]; then echo "Void Linux does not support systemd" >&2 && exit 1; fi
-
 RUN systemctl set-default multi-user.target && \
     mkdir -p /etc/systemd/journald.conf.d && \
     echo "[Journal]" > /etc/systemd/journald.conf.d/forward-to-console.conf && \
