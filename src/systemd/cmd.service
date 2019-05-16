@@ -1,0 +1,18 @@
+[Unit]
+Description=Command Mode
+DefaultDependencies=no
+Conflicts=shutdown.target
+After=sysinit.target
+Before=shutdown.target
+
+[Service]
+Environment=HOME=/root
+WorkingDirectory=/root
+ExecStart=-/bin/sh -c "/cmd; /bin/systemctl --job-mode=fail --no-block poweroff"
+Type=idle
+StandardInput=tty-force
+StandardOutput=inherit
+StandardError=inherit
+KillMode=process
+IgnoreSIGPIPE=no
+SendSIGHUP=yes

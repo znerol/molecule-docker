@@ -22,14 +22,17 @@ RUN ls -1d /etc/systemd/system ${SYSTEMD_PREFIX}/lib/systemd/system | \
     -not -name '*systemd-user-sessions*' \
     -exec rm \{} \;
 
-RUN systemctl set-default multi-user.target && \
-    mkdir -p /etc/systemd/journald.conf.d && \
+RUN mkdir -p /etc/systemd/journald.conf.d && \
     echo "[Journal]" > /etc/systemd/journald.conf.d/forward-to-console.conf && \
     echo "ForwardToConsole=yes" >> /etc/systemd/journald.conf.d/forward-to-console.conf
 
 STOPSIGNAL SIGRTMIN+3
 
 ARG SYSTEMD_PARAMS
-ENV SYSTEMD_PARAMS ${SYSTEMD_PARAMS:-"--log-target=journal"}
+ENV SYSTEMD_PARAMS ${SYSTEMD_PARAMS:-"--log-target=journal --unit=cmd.target"}
 
-CMD exec ${SYSTEMD_PREFIX}/lib/systemd/systemd ${SYSTEMD_PARAMS}
+COPY ["src/systemd/entrypoint", "/entrypoint"]
+COPY ["src/systemd/cmd.service", "/src/systemd/cmd.target", "/etc/systemd/system/"]
+RUN ["/bin/chmod", "0755", "/entrypoint"]
+ENTRYPOINT ["/entrypoint"]
+CMD ["/bin/bash"]

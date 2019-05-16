@@ -1,0 +1,5 @@
+[Unit]
+Description=Command Mode
+Requires=sysinit.target cmd.service
+After=sysinit.target cmd.service
+AllowIsolate=yes
