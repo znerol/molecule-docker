@@ -25,6 +25,9 @@ image/%: image/%/Dockerfile
 	docker pull $(@:image/%=%) || true
 	docker build --cache-from=$(@:image/%=%) --tag=$(@:image/%=%) --file=$< .
 
+test/%: image/%
+	docker run -it --rm $(@:test/%=%) /bin/true
+
 image-systemd/%/Dockerfile: image/%/data.yml
 	mkdir -p $(@D)
 	j2 -o $@ Dockerfile.j2 $<
@@ -36,6 +39,11 @@ image-systemd/%: image-systemd/%/Dockerfile
 	docker pull $(@:image-systemd/%=%) || true
 	docker pull $(@:image-systemd/%=%)-systemd || true
 	docker build --cache-from=$(@:image-systemd/%=%) --cache-from=$(@:image-systemd/%=%)-systemd --tag=$(@:image-systemd/%=%)-systemd --file=$< .
+
+test-systemd/%: image-systemd/%
+	$(eval _CONTAINER := $(shell docker run -d -it --cap-add SYS_ADMIN --tmpfs /run --tmpfs /run/lock --volume /sys/fs/cgroup:/sys/fs/cgroup:ro $(@:test-systemd/%=%)-systemd))
+	docker exec -it $(_CONTAINER) /bin/true
+	-docker stop $(_CONTAINER); docker logs $(_CONTAINER); docker rm $(_CONTAINER)
 
 clean:
 	rm -rf image image-systemd
