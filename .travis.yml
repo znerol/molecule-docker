@@ -35,11 +35,22 @@ before_script:
 script:
   - make FROM="${IMAGE_FROM}" "image/${IMAGE_NAME}:${IMAGE_TAG}"
   - make "test/${IMAGE_NAME}:${IMAGE_TAG}"
-  - docker push "${IMAGE_NAME}:${IMAGE_TAG}"
   - |
     set -e
     if [ "${IMAGE_VARIANT_SYSTEMD:-yes}" = "yes" ]; then
         make FROM="${IMAGE_FROM}" "image-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
         make "test-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
-        docker push "${IMAGE_NAME}:${IMAGE_TAG}-systemd"
     fi
+
+deploy:
+
+  - provider: script
+    script: docker push "${IMAGE_NAME}:${IMAGE_TAG}"
+    on:
+      branch: master
+
+  - provider: script
+    script: docker push "${IMAGE_NAME}:${IMAGE_TAG}-systemd"
+    on:
+      branch: master
+      env: NOT IMAGE_VARIANT_SYSTEMD = no
