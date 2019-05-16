@@ -82,26 +82,21 @@ jobs:
 
     - <<: *image-systemd
       env:
-        - image-systemd_TAG=centos
-        - image-systemd_FROM=centos
+        - IMAGE_TAG=debian
+        - IMAGE_FROM=debian
 
     - <<: *image-systemd
       env:
-        - image-systemd_TAG=debian
-        - image-systemd_FROM=debian
+        - IMAGE_TAG=fedora
+        - IMAGE_FROM=fedora
 
     - <<: *image-systemd
       env:
-        - image-systemd_TAG=fedora
-        - image-systemd_FROM=fedora
-
-    - <<: *image-systemd
-      env:
-        - image-systemd_TAG=opensuse-leap
-        - image-systemd_FROM=opensuse/leap
+        - IMAGE_TAG=opensuse-leap
+        - IMAGE_FROM=opensuse/leap
         - IMAGE_VARIANT_SYSTEMD_PREFIX=/usr
 
     - <<: *image-systemd
       env:
-        - image-systemd_TAG=ubuntu
-        - image-systemd_FROM=ubuntu
+        - IMAGE_TAG=ubuntu
+        - IMAGE_FROM=ubuntu
