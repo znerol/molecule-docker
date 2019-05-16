@@ -26,6 +26,11 @@ env:
       IMAGE_FROM=voidlinux/voidlinux
       IMAGE_VARIANT_SYSTEMD=no
 
+stages:
+  - image
+  - name: image-systemd
+    if: env(IMAGE_VARIANT_SYSTEMD) IS NOT present OR env(IMAGE_VARIANT_SYSTEMD) = "yes"
+
 install:
   - pip install j2cli PyYAML
 
@@ -33,25 +38,24 @@ before_script:
   - docker --version
   - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 
-script:
-  - make FROM="${IMAGE_FROM}" "image/${IMAGE_NAME}:${IMAGE_TAG}"
-  - make "test/${IMAGE_NAME}:${IMAGE_TAG}"
-  - |
-    set -e
-    if [ "${IMAGE_VARIANT_SYSTEMD:-yes}" = "yes" ]; then
-        make FROM="${IMAGE_FROM}" BUILD_ARGS="--build-arg=SYSTEMD_PREFIX=${IMAGE_VARIANT_SYSTEMD_PREFIX}" "image-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
-        make "test-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
-    fi
+jobs:
+  include:
+    - stage: image
+      script:
+        - make FROM="${IMAGE_FROM}" "image/${IMAGE_NAME}:${IMAGE_TAG}"
+        - make "test/${IMAGE_NAME}:${IMAGE_TAG}"
+      deploy:
+        - provider: script
+          script: docker push "${IMAGE_NAME}:${IMAGE_TAG}"
+          on:
+            branch: master
 
-deploy:
-
-  - provider: script
-    script: docker push "${IMAGE_NAME}:${IMAGE_TAG}"
-    on:
-      branch: master
-
-  - provider: script
-    script: docker push "${IMAGE_NAME}:${IMAGE_TAG}-systemd"
-    on:
-      branch: master
-      condition: "\"${IMAGE_VARIANT_SYSTEMD:-yes}\" = \"yes\""
+    - stage: image-systemd
+      script:
+        - make FROM="${IMAGE_FROM}" BUILD_ARGS="--build-arg=SYSTEMD_PREFIX=${IMAGE_VARIANT_SYSTEMD_PREFIX}" "image-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
+        - make "test-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
+      deploy:
+        - provider: script
+          script: docker push "${IMAGE_NAME}:${IMAGE_TAG}-systemd"
+          on:
+            branch: master
