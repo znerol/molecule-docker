@@ -53,4 +53,4 @@ deploy:
     script: docker push "${IMAGE_NAME}:${IMAGE_TAG}-systemd"
     on:
       branch: master
-      env: NOT IMAGE_VARIANT_SYSTEMD = no
+      condition: "${IMAGE_VARIANT_SYSTEMD:-yes}" = "yes"
