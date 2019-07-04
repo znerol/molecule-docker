@@ -2,7 +2,8 @@
 Description=Command Mode
 DefaultDependencies=no
 Conflicts=shutdown.target
-After=sysinit.target
+After=sysinit.target systemd-user-sessions.service
+Requires=systemd-user-sessions.service
 Before=shutdown.target
 
 [Service]
