@@ -4,11 +4,8 @@ define FROM_default
     endif
 endef
 
-Dockerfile.j2.raw:
-	curl -o Dockerfile.j2.raw 'https://raw.githubusercontent.com/ansible/molecule/master/molecule/cookiecutter/scenario/driver/docker/%7B%7Bcookiecutter.molecule_directory%7D%7D/%7B%7Bcookiecutter.scenario_name%7D%7D/Dockerfile.j2'
-
-Dockerfile.j2: Dockerfile.j2.raw
-	j2 -o Dockerfile.j2 Dockerfile.j2.raw
+Dockerfile.j2:
+	curl -f -o Dockerfile.j2 'https://raw.githubusercontent.com/ansible/molecule/master/molecule/data/Dockerfile.j2'
 
 image/%/data.yml: Dockerfile.j2
 	mkdir -p $(@D)
@@ -49,6 +46,6 @@ clean:
 	rm -rf image image-systemd
 
 distclean: clean
-	rm -f Dockerfile.j2.raw Dockerfile.j2
+	rm -f Dockerfile.j2
 
 .PHONY: clean distclean
