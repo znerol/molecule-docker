@@ -61,6 +61,11 @@ jobs:
 
     - <<: *image
       env:
+        - IMAGE_TAG=ubuntu-xenial
+        - IMAGE_FROM=ubuntu:xenial
+
+    - <<: *image
+      env:
         - IMAGE_TAG=voidlinux
         - IMAGE_FROM=voidlinux/voidlinux
 
@@ -98,3 +103,8 @@ jobs:
       env:
         - IMAGE_TAG=ubuntu
         - IMAGE_FROM=ubuntu
+
+    - <<: *image-systemd
+      env:
+        - IMAGE_TAG=ubuntu-xenial
+        - IMAGE_FROM=ubuntu:xenial
