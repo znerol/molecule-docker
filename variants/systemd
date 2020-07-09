@@ -3,7 +3,7 @@
 
 ENV container docker
 
-RUN if [ $(command -v apt-get) ]; then apt-get update && apt-get install -y systemd && apt-get clean; \
+RUN if [ $(command -v apt-get) ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y systemd && apt-get clean; \
     elif [ $(command -v dnf) ]; then dnf makecache && dnf --assumeyes install systemd findutils && dnf clean all; \
     elif [ $(command -v yum) ]; then yum makecache fast && yum install -y systemd && yum clean all; \
     elif [ $(command -v zypper) ]; then zypper refresh && zypper install -y systemd && zypper clean -a; \
