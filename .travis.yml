@@ -61,6 +61,11 @@ jobs:
 
     - <<: *image
       env:
+        - IMAGE_TAG=ubuntu-bionic
+        - IMAGE_FROM=ubuntu:bionic
+
+    - <<: *image
+      env:
         - IMAGE_TAG=ubuntu-xenial
         - IMAGE_FROM=ubuntu:xenial
 
@@ -103,6 +108,11 @@ jobs:
       env:
         - IMAGE_TAG=ubuntu
         - IMAGE_FROM=ubuntu
+
+    - <<: *image-systemd
+      env:
+        - IMAGE_TAG=ubuntu-bionic
+        - IMAGE_FROM=ubuntu:bionic
 
     - <<: *image-systemd
       env:
