@@ -17,6 +17,12 @@ on:
       systemd-prefix:
         required: true
         type: string
+      docker-username:
+        required: true
+        type: string
+    secrets:
+      DOCKER_PASSWORD:
+        required: true
 
 env:
   IMAGE_TAG: ${{ inputs.image-tag }}
@@ -47,3 +53,9 @@ jobs:
         run: |
           make FROM="${{ inputs.image-from }}" BUILD_ARGS="--build-arg=SYSTEMD_PREFIX=${{ inputs.systemd-prefix }}" "image-systemd/${{ inputs.image-name }}:${{ inputs.image-tag }}"
           make "test-systemd/${{ inputs.image-name }}:${{ inputs.image-tag }}"
+
+      - name: Push
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | podman login -u "${{ inputs.docker-username }}" --password-stdin docker.io
+          podman push ${{ inputs.image-name }}:${{ inputs.image-tag }}

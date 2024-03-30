@@ -14,6 +14,12 @@ on:
       image-from:
         required: true
         type: string
+      docker-username:
+        required: true
+        type: string
+    secrets:
+      DOCKER_PASSWORD:
+        required: true
 
 jobs:
   build:
@@ -35,3 +41,9 @@ jobs:
         run: |
           make FROM="${{ inputs.image-from }}" "image/${{ inputs.image-name }}:${{ inputs.image-tag }}"
           make "test/${{ inputs.image-name }}:${{ inputs.image-tag }}"
+
+      - name: Push
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | podman login -u "${{ inputs.docker-username }}" --password-stdin docker.io
+          podman push ${{ inputs.image-name }}:${{ inputs.image-tag }}
