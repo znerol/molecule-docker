@@ -5,7 +5,7 @@ define FROM_default
 endef
 
 Dockerfile.j2:
-	curl -f -o Dockerfile.j2 'https://raw.githubusercontent.com/ansible-community/molecule/master/src/molecule/data/Dockerfile.j2'
+	curl -f -o Dockerfile.j2 'https://raw.githubusercontent.com/ansible/molecule/stable/3.4/src/molecule/data/Dockerfile.j2'
 
 image/%/data.yml: Dockerfile.j2
 	mkdir -p $(@D)
