@@ -23,7 +23,7 @@ image/%: image/%/Dockerfile
 	docker build $(BUILD_ARGS) --cache-from=$(@:image/%=%) --tag=$(@:image/%=%) --file=$< .
 
 test/%: image/%
-	docker run -it --rm $(@:test/%=%) /bin/true
+	docker run --rm $(@:test/%=%) /bin/true
 
 image-systemd/%/Dockerfile: image/%/data.yml
 	mkdir -p $(@D)
