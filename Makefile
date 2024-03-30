@@ -38,8 +38,8 @@ image-systemd/%: image-systemd/%/Dockerfile
 	docker build $(BUILD_ARGS) --cache-from=$(@:image-systemd/%=%) --cache-from=$(@:image-systemd/%=%)-systemd --tag=$(@:image-systemd/%=%)-systemd --file=$< .
 
 test-systemd/%: image-systemd/%
-	$(eval _CONTAINER := $(shell docker run -d -it --cap-add SYS_ADMIN --tmpfs /run --tmpfs /run/lock --volume /sys/fs/cgroup:/sys/fs/cgroup:ro $(@:test-systemd/%=%)-systemd))
-	docker exec -it $(_CONTAINER) /bin/true
+	$(eval _CONTAINER := $(shell docker run -d --cap-add SYS_ADMIN --tmpfs /run --tmpfs /run/lock --volume /sys/fs/cgroup:/sys/fs/cgroup:ro $(@:test-systemd/%=%)-systemd))
+	docker exec $(_CONTAINER) /bin/true
 	-docker stop $(_CONTAINER); docker logs $(_CONTAINER); docker rm $(_CONTAINER)
 
 clean:
