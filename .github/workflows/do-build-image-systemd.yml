@@ -1,0 +1,61 @@
+---
+name: Build image (systemd)
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
+      image-tag:
+        required: true
+        type: string
+      image-from:
+        required: true
+        type: string
+      systemd-prefix:
+        required: true
+        type: string
+      docker-username:
+        required: true
+        type: string
+    secrets:
+      DOCKER_PASSWORD:
+        required: true
+
+env:
+  IMAGE_TAG: ${{ inputs.image-tag }}
+  IMAGE_FROM: ${{ inputs.image-from }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install j2cli PyYAML
+
+      - name: Patch crun
+        run: |
+          curl -fsSL -o crun https://github.com/containers/crun/releases/download/1.14.4/crun-1.14.4-linux-amd64
+          sudo install -m 0755 -o root -g root crun /usr/bin/crun
+
+      - name: Build
+        run: |
+          make FROM="${{ inputs.image-from }}" BUILD_ARGS="--build-arg=SYSTEMD_PREFIX=${{ inputs.systemd-prefix }}" "image-systemd/${{ inputs.image-name }}:${{ inputs.image-tag }}"
+          make "test-systemd/${{ inputs.image-name }}:${{ inputs.image-tag }}"
+
+      - name: Push
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | podman login -u "${{ inputs.docker-username }}" --password-stdin docker.io
+          podman push ${{ inputs.image-name }}:${{ inputs.image-tag }}

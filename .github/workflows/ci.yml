@@ -1,0 +1,101 @@
+---
+name: CI
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  alpine:
+    uses: ./.github/workflows/do-build-image.yml
+    secrets: inherit
+    with:
+      image-from: docker.io/library/alpine
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: alpine
+      docker-username: znerolmolecule
+
+  centos:
+    uses: ./.github/workflows/do-build-image.yml
+    secrets: inherit
+    with:
+      image-from: quay.io/centos/centos:stream
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: centos
+      docker-username: znerolmolecule
+
+  debian:
+    uses: ./.github/workflows/do-build-image.yml
+    secrets: inherit
+    with:
+      image-from: docker.io/library/debian:latest
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: debian
+      docker-username: znerolmolecule
+
+  fedora:
+    uses: ./.github/workflows/do-build-image.yml
+    secrets: inherit
+    with:
+      image-from: quay.io/fedora/fedora:latest
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: fedora
+      docker-username: znerolmolecule
+
+  ubuntu:
+    uses: ./.github/workflows/do-build-image.yml
+    secrets: inherit
+    with:
+      image-from: docker.io/library/ubuntu:latest
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: ubuntu
+      docker-username: znerolmolecule
+
+  centos-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    secrets: inherit
+    with:
+      image-from: quay.io/centos/centos:stream
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: centos
+      docker-username: znerolmolecule
+      systemd-prefix:
+
+  debian-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    secrets: inherit
+    with:
+      image-from: docker.io/library/debian:latest
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: debian
+      docker-username: znerolmolecule
+      systemd-prefix:
+
+  fedora-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    secrets: inherit
+    with:
+      image-from: quay.io/fedora/fedora:latest
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: fedora
+      docker-username: znerolmolecule
+      systemd-prefix:
+
+  ubuntu-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    secrets: inherit
+    with:
+      image-from: docker.io/library/ubuntu:latest
+      image-name: docker.io/znerolmolecule/molecule-prebuilt
+      image-tag: ubuntu
+      docker-username: znerolmolecule
+      systemd-prefix:
