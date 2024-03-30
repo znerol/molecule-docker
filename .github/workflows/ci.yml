@@ -43,13 +43,6 @@ jobs:
       image-tag: fedora
       image-from: quay.io/fedora/fedora:latest
 
-  opensuse-leap:
-    uses: ./.github/workflows/do-build-image.yml
-    with:
-      image-name: znerolmolecule/molecule-prebuilt
-      image-tag: opensuse-leap
-      image-from: docker.io/opensuse/leap:latest
-
   ubuntu:
     uses: ./.github/workflows/do-build-image.yml
     with:
@@ -80,14 +73,6 @@ jobs:
       image-tag: fedora
       image-from: quay.io/fedora/fedora:latest
       systemd-prefix:
-
-  opensuse-leap-systemd:
-    uses: ./.github/workflows/do-build-image-systemd.yml
-    with:
-      image-name: znerolmolecule/molecule-prebuilt
-      image-tag: opensuse-leap
-      image-from: docker.io/opensuse/leap:latest
-      systemd-prefix: /usr
 
   ubuntu-systemd:
     uses: ./.github/workflows/do-build-image-systemd.yml
