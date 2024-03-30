@@ -18,12 +18,11 @@ image/%/Dockerfile: image/%/data.yml
 
 image/%: image/%/Dockerfile
 	$(eval $(call FROM_default, $(@D)))
-	docker pull $(FROM)
-	docker pull $(@:image/%=%) || true
-	docker build $(BUILD_ARGS) --cache-from=$(@:image/%=%) --tag=$(@:image/%=%) --file=$< .
+	podman pull $(FROM)
+	podman build $(BUILD_ARGS) --tag=$(@:image/%=%) --file=$< .
 
 test/%: image/%
-	docker run --rm $(@:test/%=%) /bin/true
+	podman run --rm $(@:test/%=%) /bin/true
 
 image-systemd/%/Dockerfile: image/%/data.yml
 	mkdir -p $(@D)
@@ -32,15 +31,13 @@ image-systemd/%/Dockerfile: image/%/data.yml
 
 image-systemd/%: image-systemd/%/Dockerfile
 	$(eval $(call FROM_default, $(@D)))
-	docker pull $(FROM)
-	docker pull $(@:image-systemd/%=%) || true
-	docker pull $(@:image-systemd/%=%)-systemd || true
-	docker build $(BUILD_ARGS) --cache-from=$(@:image-systemd/%=%) --cache-from=$(@:image-systemd/%=%)-systemd --tag=$(@:image-systemd/%=%)-systemd --file=$< .
+	podman pull $(FROM)
+	podman build $(BUILD_ARGS) --tag=$(@:image-systemd/%=%)-systemd --file=$< .
 
 test-systemd/%: image-systemd/%
-	$(eval _CONTAINER := $(shell docker run -d --cap-add SYS_ADMIN --tmpfs /run --tmpfs /run/lock --volume /sys/fs/cgroup:/sys/fs/cgroup:ro $(@:test-systemd/%=%)-systemd))
-	docker exec $(_CONTAINER) /bin/true
-	-docker stop $(_CONTAINER); docker logs $(_CONTAINER); docker rm $(_CONTAINER)
+	$(eval _CONTAINER := $(shell podman run -d --systemd=always $(@:test-systemd/%=%)-systemd))
+	podman exec $(_CONTAINER) /bin/true
+	-podman stop $(_CONTAINER); podman logs $(_CONTAINER); podman rm $(_CONTAINER)
 
 clean:
 	rm -rf image image-systemd
