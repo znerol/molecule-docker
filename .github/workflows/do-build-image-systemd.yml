@@ -30,6 +30,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install j2cli PyYAML
+
       - name: Build
         run: |
           make FROM="${{ inputs.image-from }}" BUILD_ARGS="--build-arg=SYSTEMD_PREFIX=${{ inputs.systemd-prefix }}" "image-systemd/${{ inputs.image-name }}:${{ inputs.image-tag }}"
