@@ -14,81 +14,85 @@ on:
       - main
       - develop
 
-env:
-  IMAGE_NAME: znerolmolecule/molecule-prebuilt
-  DOCKER_USERNAME: znerolmoleculeci
-  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
 jobs:
-  &image:
-    runs-on: ubuntu-latest
+  alpine:
+    uses: ./.github/workflows/do-build-image.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: alpine
+      image-from: docker.io/library/alpine
 
-    env:
-      IMAGE_TAG: alpine
-      IMAGE_FROM: docker.io/library/alpine
+  centos:
+    uses: ./.github/workflows/do-build-image.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: centos
+      image-from: quay.io/centos/centos:stream
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  debian:
+    uses: ./.github/workflows/do-build-image.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: debian
+      image-from: docker.io/library/debian:latest
 
-      - name: Build
-        run: |
-          make FROM="${IMAGE_FROM}" "image/${IMAGE_NAME}:${IMAGE_TAG}"
-          make "test/${IMAGE_NAME}:${IMAGE_TAG}"
+  fedora:
+    uses: ./.github/workflows/do-build-image.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: fedora
+      image-from: quay.io/fedora/fedora:latest
 
-  <<: *image
-    env:
-      IMAGE_TAG: centos
-      IMAGE_FROM: quay.io/centos/centos:stream9
+  opensuse-leap:
+    uses: ./.github/workflows/do-build-image.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: opensuse-leap
+      image-from: docker.io/opensuse/leap:latest
 
-  <<: *image
-    env:
-      IMAGE_TAG: debian
-      IMAGE_FROM: docker.io/library/debian:latest
+  ubuntu:
+    uses: ./.github/workflows/do-build-image.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: ubuntu
+      image-from: docker.io/library/ubuntu:latest
 
-  <<: *image
-    env:
-      IMAGE_TAG: fedora
-      IMAGE_FROM: quay.io/fedora/fedora:latest
+  centos-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: centos
+      image-from: quay.io/centos/centos:stream
+      systemd-prefix:
 
-  <<: *image
-    env:
-      IMAGE_TAG: opensuse-leap
-      IMAGE_FROM: docker.io/opensuse/leap:latest
+  debian-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: debian
+      image-from: docker.io/library/debian:latest
+      systemd-prefix:
 
-  <<: *image
-    env:
-      IMAGE_TAG: ubuntu
-      IMAGE_FROM: docker.io/library/ubuntu:latest
+  fedora-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: fedora
+      image-from: quay.io/fedora/fedora:latest
+      systemd-prefix:
 
-  &image-systemd:
-    runs-on: ubuntu-latest
+  opensuse-leap-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: opensuse-leap
+      image-from: docker.io/opensuse/leap:latest
+      systemd-prefix: /usr
 
-    env:
-      IMAGE_TAG: centos
-      IMAGE_FROM: quay.io/centos/centos:stream
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build
-        run: |
-          make FROM="${IMAGE_FROM}" BUILD_ARGS="--build-arg=SYSTEMD_PREFIX=${IMAGE_VARIANT_SYSTEMD_PREFIX}" "image-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
-          make "test-systemd/${IMAGE_NAME}:${IMAGE_TAG}"
-
-  <<: *image-systemd
-    env:
-      IMAGE_TAG: fedora
-      IMAGE_FROM: quay.io/fedora/fedora:latest
-
-  <<: *image-systemd
-    env:
-      IMAGE_TAG: opensuse-leap
-      IMAGE_FROM: docker.io/opensuse/leap:latest
-      IMAGE_VARIANT_SYSTEMD_PREFIX: /usr
-
-  <<: *image-systemd
-    env:
-      IMAGE_TAG: ubuntu
-      IMAGE_FROM: docker.io/library/ubuntu:latest
+  ubuntu-systemd:
+    uses: ./.github/workflows/do-build-image-systemd.yml
+    with:
+      image-name: znerolmolecule/molecule-prebuilt
+      image-tag: ubuntu
+      image-from: docker.io/library/ubuntu:latest
+      systemd-prefix:
