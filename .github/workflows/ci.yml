@@ -28,7 +28,7 @@ jobs:
     uses: ./.github/workflows/do-build-image.yml
     secrets: inherit
     with:
-      image-from: quay.io/centos/centos:stream
+      image-from: quay.io/centos/centos:stream9
       image-name: docker.io/znerolmolecule/molecule-prebuilt
       image-tag: centos
       docker-username: znerolmoleculeci
@@ -64,7 +64,7 @@ jobs:
     uses: ./.github/workflows/do-build-image-systemd.yml
     secrets: inherit
     with:
-      image-from: quay.io/centos/centos:stream
+      image-from: quay.io/centos/centos:stream9
       image-name: docker.io/znerolmolecule/molecule-prebuilt
       image-tag: centos
       docker-username: znerolmoleculeci
